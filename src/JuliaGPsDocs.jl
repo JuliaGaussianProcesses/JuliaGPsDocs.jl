@@ -56,7 +56,7 @@ function precompile_package(examples::AbstractVector{<:String})
 end
 
 """
-    run_examples(examples)
+    run_examples(examples, EXAMPLES_OUT, PKG_DIR, WEBSITE)
 
 Start background processes to render the examples using the $(LITERATE) script.
 
