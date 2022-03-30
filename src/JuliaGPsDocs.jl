@@ -1,5 +1,7 @@
 module JuliaGPsDocs
 
+include("literate_functions.jl")
+
 const LITERATE = joinpath(@__DIR__, "literate.jl")
 
 function generate_examples(
