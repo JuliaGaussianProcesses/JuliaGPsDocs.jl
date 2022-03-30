@@ -1,5 +1,8 @@
 module JuliaGPsDocs
 
+using Literate
+using Pkg
+
 include("literate_functions.jl")
 
 const LITERATE = joinpath(@__DIR__, "literate.jl")

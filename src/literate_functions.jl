@@ -61,7 +61,7 @@ function run_example(EXAMPLE, PKG_DIR, OUT_DIR, WEBSITE)
 
     # Activate environment
     # Note that each example's Project.toml must include Literate as a dependency
-    const EXAMPLE_DIR = joinpath(PKG_DIR, "examples", EXAMPLE)
+    EXAMPLE_DIR = joinpath(PKG_DIR, "examples", EXAMPLE)
     Pkg.activate(EXAMPLE_DIR)
     Pkg.instantiate()
     pkg_status = sprint() do io
@@ -70,13 +70,13 @@ function run_example(EXAMPLE, PKG_DIR, OUT_DIR, WEBSITE)
     # Add the dev version of the package
     Pkg.develop(Pkg.PackageSpec(; path=PKG_DIR))
 
-    const MANIFEST_OUT = joinpath(EXAMPLE, "Manifest.toml")
+    MANIFEST_OUT = joinpath(EXAMPLE, "Manifest.toml")
     mkpath(joinpath(OUT_DIR, EXAMPLE))
     # Make a copy of the Manifest to include in the notebook
-    cp(joinpath(EXAMPLEPATH, "Manifest.toml"), joinpath(OUT_DIR, MANIFEST_OUT); force=true)
+    cp(joinpath(EXAMPLE_DIR, "Manifest.toml"), joinpath(OUT_DIR, MANIFEST_OUT); force=true)
 
     # Convert to markdown and notebook
-    const SCRIPTJL = joinpath(EXAMPLEPATH, "script.jl")
-    Literate.markdown(SCRIPTJL, OUTDIR; name=EXAMPLE, execute=true, preprocess=preprocess)
-    Literate.notebook(SCRIPTJL, OUTDIR; name=EXAMPLE, execute=true, preprocess=preprocess)
+    SCRIPTJL = joinpath(EXAMPLE_DIR, "script.jl")
+    Literate.markdown(SCRIPTJL, OUT_DIR; name=EXAMPLE, execute=true, preprocess=preprocess)
+    Literate.notebook(SCRIPTJL, OUT_DIR; name=EXAMPLE, execute=true, preprocess=preprocess)
 end

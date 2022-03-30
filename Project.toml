@@ -3,6 +3,9 @@ uuid = "53893f40-9e0f-42af-881a-c9dd8f22742d"
 authors = ["Theo Galy-Fajou <theo.galyfajou@gmail.com> and contributors"]
 version = "0.1.0"
 
+[deps]
+Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
+
 [compat]
 julia = "1"
 
