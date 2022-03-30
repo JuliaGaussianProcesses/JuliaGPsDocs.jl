@@ -38,7 +38,8 @@ end
 """
     precompile_package(examples)
 
-Go in each example and try instantiating each of the examples environments
+Go in each example and try instantiating each of the examples environments.
+This has to be executed sequentially, before rendering the examples in parallel.
 """
 function precompile_package(examples::AbstractVector{<:String})
     let script = "using Pkg; Pkg.activate(ARGS[1]); Pkg.instantiate()"
