@@ -2,7 +2,13 @@
 # Retrieve name of example and output directory
 if length(ARGS) != 4
     error(
-        "please specify the name of the example, the package directory and the output directory",
+        """
+        please specify, in this order:
+        - the basename of the example directory (e.g. `0-intro-1d`)
+        - the root of the package directory (e.g. `~/AbstractGPs.jl/`)
+        - the output directory (e.g. `path/to/docs/src/`)
+        - the base URL of the website (e.g. `https://juliagaussianprocesses.github.io/AbstractGPs.jl`)
+        """
     )
 end
 const EXAMPLE = ARGS[1]

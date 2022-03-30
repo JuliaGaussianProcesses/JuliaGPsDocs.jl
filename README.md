@@ -1,3 +1,3 @@
 # JuliaGPsDocs
 
-Contains all the docs' mechanism used in the different JuliaGPs in particular the example generation
+Contains all the mechanisms used in the documentation of the different JuliaGaussianProcesses packages, in particular the example generation.

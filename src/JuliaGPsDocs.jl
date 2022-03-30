@@ -57,14 +57,14 @@ end
 """
     run_examples(examples)
 
-Create a different process where the examples are rendered both as Markdown and Jupyter Notebooks.
+Start background processes to render the examples using the $(LITERATE) script.
 
 ## Arguments
 
-- `examples` : vector of path to the examples folder
-- `EXAMPLES_OUT` : path to examples output
-- `PKG_DIR` : path to the package to be developed
-- `WEBSITE` : path to the website url
+- `examples`: vector of path to the examples folder
+- `EXAMPLES_OUT`: path to examples output
+- `PKG_DIR`: path to the package to be developed
+- `WEBSITE`: path to the website url
 """
 function run_examples(examples, EXAMPLES_OUT, PKG_DIR, WEBSITE)
     return map(examples) do example
