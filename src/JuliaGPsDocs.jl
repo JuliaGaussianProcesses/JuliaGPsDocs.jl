@@ -4,11 +4,11 @@ const LITERATE = joinpath(@__DIR__, "literate.jl")
 
 function generate_examples(
     pkg::Module;
-    example_dir="examples",
+    examples_basedir="examples",
     website_root="https://juliagaussianprocesses.github.io/",
 )
     PKG_DIR = pkgdir(pkg)
-    EXAMPLES_DIR = joinpath(PKG_DIR, example_dir)
+    EXAMPLES_DIR = joinpath(PKG_DIR, examples_basedir)
     isdir(EXAMPLES_DIR) || error("example folder $EXAMPLES_DIR not found")
 
     DOCS_DIR = joinpath(PKG_DIR, "docs")
