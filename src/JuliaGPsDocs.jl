@@ -2,7 +2,11 @@ module JuliaGPsDocs
 
 const LITERATE = joinpath(@__DIR__, "literate.jl")
 
-function generate_examples(pkg::Module; example_dir="examples", website_root="https://juliagaussianprocesses.github.io/")
+function generate_examples(
+    pkg::Module;
+    example_dir="examples",
+    website_root="https://juliagaussianprocesses.github.io/",
+)
     PKG_DIR = pkgdir(pkg)
     EXAMPLES_DIR = joinpath(PKG_DIR, example_dir)
     isdir(EXAMPLES_DIR) || error("example folder $EXAMPLES_DIR not found")
@@ -24,7 +28,7 @@ function generate_examples(pkg::Module; example_dir="examples", website_root="ht
     processes = run_examples(examples, EXAMPLES_OUT, PKG_DIR, WEBSITE)
 
     if !isempty(processes)
-        error("no process was run, check the paths used to your examples") 
+        error("no process was run, check the paths used to your examples")
     elseif !success(processes)
         error("the examples $(examples[success.(processes)]) were not run successfully")
     end
@@ -64,17 +68,16 @@ Create a different process where the examples are rendered both as Markdown and 
 """
 function run_examples(examples, EXAMPLES_OUT, PKG_DIR, WEBSITE)
     return map(examples) do example
-            return run(
-                pipeline(
-                    `$(Base.julia_cmd()) $(LITERATE) $(basename(example)) $(PKG_DIR) $(EXAMPLES_OUT) $(WEBSITE)`;
-                    stdin=devnull,
-                    stdout=devnull,
-                    stderr=stderr,
-                );
-                wait=false,
-            )::Base.Process
+        return run(
+            pipeline(
+                `$(Base.julia_cmd()) $(LITERATE) $(basename(example)) $(PKG_DIR) $(EXAMPLES_OUT) $(WEBSITE)`;
+                stdin=devnull,
+                stdout=devnull,
+                stderr=stderr,
+            );
+            wait=false,
+        )::Base.Process
     end
 end
-
 
 end

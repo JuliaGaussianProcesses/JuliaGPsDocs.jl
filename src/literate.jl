@@ -1,7 +1,9 @@
 
 # Retrieve name of example and output directory
 if length(ARGS) != 4
-    error("please specify the name of the example, the package directory and the output directory")
+    error(
+        "please specify the name of the example, the package directory and the output directory",
+    )
 end
 const EXAMPLE = ARGS[1]
 const PKG_DIR = ARGS[2]
@@ -20,7 +22,7 @@ pkg_status = sprint() do io
     Pkg.status(; io=io)
 end
 # Add the dev version of the package
-Pkg.develop(Pkg.PackageSpec(path=PKG_DIR))
+Pkg.develop(Pkg.PackageSpec(; path=PKG_DIR))
 
 using Literate: Literate
 
