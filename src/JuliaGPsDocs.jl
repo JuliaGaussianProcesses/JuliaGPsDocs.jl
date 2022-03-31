@@ -2,6 +2,19 @@ module JuliaGPsDocs
 
 const LITERATE = joinpath(@__DIR__, "literate.jl")
 
+"""
+    generate_examples(pkg; examples_basedir, website_root)
+
+Initialize the environments in each folder `pkgdir(pkg)/examples_basedir` sequentially.
+Then run each example in a separate process.
+
+## Arguments
+- `pkg`: the module where the examples are stored
+- `examples_basedir`: the relative path to the examples directory (`examples` by default)
+- `website_root`: the website root path (for correct redirecting in the examples)
+`https://juliagaussianprocesses.github.io/` by default.
+
+"""
 function generate_examples(
     pkg::Module;
     examples_basedir="examples",
