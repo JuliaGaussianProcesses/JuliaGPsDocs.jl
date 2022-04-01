@@ -1,0 +1,3 @@
+[deps]
+JuliaGPsDocs = "53893f40-9e0f-42af-881a-c9dd8f22742d"
+Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"

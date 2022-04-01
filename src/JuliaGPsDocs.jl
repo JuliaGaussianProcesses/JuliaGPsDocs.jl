@@ -1,18 +1,47 @@
 module JuliaGPsDocs
 
+using Literate
+
 const LITERATE = joinpath(@__DIR__, "literate.jl")
 
 """
-    generate_examples(pkg; examples_basedir, website_root)
+    generate_examples(
+        pkg;
+        examples_basedir="examples",
+        website_root="https://juliagaussianprocesses.github.io/"
+    )
 
 Initialize the environments in each folder `pkgdir(pkg)/examples_basedir` sequentially.
 Then run each example in a separate process.
 
+The examples structure should be organized as follow:
+
+examples_basedir
+├─ example-a
+|   ├─ script.jl
+|   └─ Project.toml
+└─ example-b
+   ├─ script.jl
+   └─ Project.toml
+
+The output will be given by
+
+docs
+└─ src
+    └─ examples
+        ├─ example-a
+        |   ├─ example.md
+        |   ├─ notebook.ipynb
+        |   └─ Manifest.toml
+        └─ example-b
+            ├─ example.md
+            ├─ notebook.ipynb
+            └─ Manifest.toml
+
 ## Arguments
 - `pkg`: the module where the examples are stored
-- `examples_basedir`: the relative path to the examples directory (`examples` by default)
+- `examples_basedir`: the relative path to the examples directory
 - `website_root`: the website root path (for correct redirecting in the examples)
-`https://juliagaussianprocesses.github.io/` by default.
 - `inclusions`: will only run the example directories listed (all by default)
 - `exclusions`: will not run any of the examples directories listed (even if present in `inclusions`)
 
@@ -47,11 +76,13 @@ function generate_examples(
 
     examples = joinpath.(Ref(EXAMPLES_DIR), examples)
 
-    precompile_packages(examples)
+    @info "Instantiating examples environments"
+    precompile_packages(pkg, examples)
 
-    processes = run_examples(examples, EXAMPLES_OUT, PKG_DIR, WEBSITE)
+    @info "Running examples in parallel"
+    processes = run_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
 
-    if !isempty(processes)
+    if isempty(processes)
         error("no process was run, check the paths used to your examples")
     elseif !success(processes)
         error("the examples $(examples[success.(processes)]) were not run successfully")
@@ -60,21 +91,24 @@ function generate_examples(
 end
 
 """
-    precompile_package(examples)
+    precompile_packages(pkg, examples)
 
 Go in each example and try instantiating each of the examples environments.
 This has to be executed sequentially, before rendering the examples in parallel.
 """
-function precompile_package(examples::AbstractVector{<:String})
-    let script = "using Pkg; Pkg.activate(ARGS[1]); Pkg.instantiate()"
-        for example in examples
-            if !success(`$(Base.julia_cmd()) -e $script $example`)
-                error(
-                    "project environment of example ",
-                    basename(example),
-                    " could not be instantiated",
-                )
-            end
+function precompile_packages(pkg, examples::AbstractVector{<:String})
+    script = """
+using Pkg
+Pkg.add(Pkg.PackageSpec(; path="$(pkgdir(pkg))"))
+Pkg.instantiate()
+    """
+    for example in examples
+        cmd = `$(Base.julia_cmd()) --project=$example -e $script`
+        if !success(cmd)
+            @warn string(
+                "project environment of ", basename(example), " could not be instantiated"
+            )
+            read(cmd, String)
         end
     end
 end
@@ -88,14 +122,18 @@ Start background processes to render the examples using the $(LITERATE) script.
 
 - `examples`: vector of path to the examples folder
 - `EXAMPLES_OUT`: path to examples output
+- `EXAMPLES_DIR`: path to the root examples folder
 - `PKG_DIR`: path to the package to be developed
 - `WEBSITE`: path to the website url
 """
-function run_examples(examples, EXAMPLES_OUT, PKG_DIR, WEBSITE)
+function run_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
+    cmd = addenv( # From https://github.com/devmotion/CalibrationErrors.jl/
+        Base.julia_cmd(), "JULIA_LOAD_PATH" => (Sys.iswindows() ? ";" : ":") * @__DIR__
+    )
     return map(examples) do example
         return run(
             pipeline(
-                `$(Base.julia_cmd()) $(LITERATE) $(basename(example)) $(PKG_DIR) $(EXAMPLES_OUT) $(WEBSITE)`;
+                `$(cmd) --startup-file="no" --project=$(example) $(LITERATE) $(basename(example)) $(EXAMPLES_DIR) $(PKG_DIR) $(EXAMPLES_OUT) $(WEBSITE)`;
                 stdin=devnull,
                 stdout=devnull,
                 stderr=stderr,
