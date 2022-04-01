@@ -87,6 +87,7 @@ Start background processes to render the examples using the $(LITERATE) script.
 
 - `examples`: vector of path to the examples folder
 - `EXAMPLES_OUT`: path to examples output
+- `EXAMPLES_DIR` : path to the root examples folder
 - `PKG_DIR`: path to the package to be developed
 - `WEBSITE`: path to the website url
 """
