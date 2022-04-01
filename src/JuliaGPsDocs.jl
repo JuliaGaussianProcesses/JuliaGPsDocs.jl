@@ -40,7 +40,9 @@ function generate_examples(
 
     examples = filter!(isdir, readdir(EXAMPLES_DIR))
 
-    isempty(inclusions) ? intersect!(examples, inclusions) : nothing
+    if !isempty(inclusions)
+        intersect!(examples, inclusions)
+    end
     setdiff!(examples, exclusions)
 
     examples = joinpath.(Ref(EXAMPLES_DIR), examples)
