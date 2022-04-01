@@ -1,6 +1,7 @@
 module JuliaGPsDocs
 
 using Literate
+using RemoteREPL
 
 const LITERATE = joinpath(@__DIR__, "literate.jl")
 
@@ -78,7 +79,7 @@ function generate_examples(
     end
     setdiff!(examples, exclusions)
 
-    @show examples = joinpath.(Ref(EXAMPLES_DIR), examples)
+    examples = joinpath.(Ref(EXAMPLES_DIR), examples)
 
     @info "Instantiating examples environments"
     precompile_packages(pkg, examples)
@@ -93,6 +94,40 @@ function generate_examples(
     end
     return examples
 end
+
+function rolling_examples(pkg::Module;
+    examples_basedir="examples",
+    website_root="https://juliagaussianprocesses.github.io/",
+    inclusions=:all,
+    exclusions=String[])
+    PKG_DIR = pkgdir(pkg)
+    EXAMPLES_DIR = joinpath(PKG_DIR, examples_basedir)
+    isdir(EXAMPLES_DIR) || error("example folder $EXAMPLES_DIR not found")
+
+    DOCS_DIR = joinpath(PKG_DIR, "docs")
+    EXAMPLES_OUT = joinpath(DOCS_DIR, "src", "examples")
+    mkpath(EXAMPLES_OUT)
+
+    WEBSITE = joinpath(website_root, string(pkg) * ".jl")
+
+    examples = basename.(filter!(isdir, readdir(EXAMPLES_DIR; join=true)))
+
+    if inclusions != :all
+        intersect!(examples, inclusions)
+    end
+    setdiff!(examples, exclusions)
+
+    examples = joinpath.(Ref(EXAMPLES_DIR), examples)
+
+    @info "Instantiating examples environments"
+    # precompile_packages(pkg, examples)
+
+    @info "Keep running examples while session is on"
+    processes = roll_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
+    return examples
+
+end
+
 
 """
     precompile_packages(pkg, examples)
@@ -147,4 +182,50 @@ function run_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
     end
 end
 
+
+"""
+    roll_examples(examples, EXAMPLES_OUT, PKG_DIR, WEBSITE)
+
+Start background processes to render the examples using the $(LITERATE) script.
+
+## Arguments
+
+- `examples`: vector of path to the examples folder
+- `EXAMPLES_OUT`: path to examples output
+- `EXAMPLES_DIR`: path to the root examples folder
+- `PKG_DIR`: path to the package to be developed
+- `WEBSITE`: path to the website url
+"""
+function roll_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
+    cmd = addenv( # From https://github.com/devmotion/CalibrationErrors.jl/
+        Base.julia_cmd(), "JULIA_LOAD_PATH" => (Sys.iswindows() ? ";" : ":") * "/home/theo/.julia/dev/JuliaGPsDocs/"
+    )
+    example_to_port = Dict(examples[i] => 5000 + i for i in eachindex(examples))
+    processes = map(examples) do example
+        port = example_to_port[example]
+        # TODO check for port opening and close if necessary
+        return run(
+            pipeline(
+                `$(cmd) --startup-file="no" --project=$(example) -e "using RemoteREPL; serve_repl($(port))" $(basename(example)) $(EXAMPLES_DIR) $(PKG_DIR) $(EXAMPLES_OUT) $(WEBSITE)`;
+                stdin=devnull,
+                stdout=stdout,
+                stderr=stderr,
+            );
+            wait=false,
+        )::Base.Process
+    end
+    sleep(2)
+    map(examples) do example
+        port = example_to_port[example]
+        RemoteREPL.remote_eval(RemoteREPL.Sockets.localhost, port, "@async include(\"$(LITERATE)\")")
+    end
+    # Create an infinite loop where one checks when a file is modified and rerun the appropriate process when necessary
+
+    # map(examples) do example
+    #     port = example_to_port[example]
+    #     RemoteREPL.remote_eval(RemoteREPL.Sockets.localhost, port, "@async exit()")
+    # end
+end
+
+LITERATE
 end
