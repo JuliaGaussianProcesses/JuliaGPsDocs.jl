@@ -9,7 +9,7 @@ if length(ARGS) != 5
         - the root of the package directory (e.g. `~/AbstractGPs.jl/`)
         - the full path to the output directory (e.g. `path/to/docs/src/`)
         - the base URL of the website (e.g. `https://juliagaussianprocesses.github.io/AbstractGPs.jl`)
-        """
+        """,
     )
 end
 const EXAMPLE = ARGS[1]
@@ -99,5 +99,9 @@ end
 
 # Convert to markdown and notebook
 const SCRIPTJL = joinpath(EXAMPLE_PATH, "script.jl")
-Literate.markdown(SCRIPTJL, joinpath(OUT_DIR, EXAMPLE); name=EXAMPLE, execute=true, preprocess=preprocess)
-Literate.notebook(SCRIPTJL, joinpath(OUT_DIR, EXAMPLE); name=EXAMPLE, execute=true, preprocess=preprocess)
+Literate.markdown(
+    SCRIPTJL, joinpath(OUT_DIR, EXAMPLE); name=EXAMPLE, execute=true, preprocess=preprocess
+)
+Literate.notebook(
+    SCRIPTJL, joinpath(OUT_DIR, EXAMPLE); name=EXAMPLE, execute=true, preprocess=preprocess
+)
