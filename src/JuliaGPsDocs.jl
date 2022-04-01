@@ -60,12 +60,14 @@ This has to be executed sequentially, before rendering the examples in parallel.
 """
 function precompile_packages(pkg, examples::AbstractVector{<:String})
     script = """
-        using Pkg
-        Pkg.add(Pkg.PackageSpec(; path="$(pkgdir(pkg))"))
-        Pkg.instantiate()
+@info LOAD_PATH
+using Pkg
+Pkg.add(Pkg.PackageSpec(; path="$(pkgdir(pkg))"))
+Pkg.instantiate()
     """
     for example in examples
         cmd = `$(Base.julia_cmd()) --project=$example -e $script`
+        read(cmd, String)
         if !success(cmd)
             @warn string(
                 "project environment of ", basename(example), " could not be instantiated"
