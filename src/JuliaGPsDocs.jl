@@ -39,7 +39,7 @@ function generate_examples(
     examples = filter!(isdir, readdir(EXAMPLES_DIR; join=true))
 
     @info "Instantiating examples environments"
-    precompile_packages(examples, PKG_DIR)
+    precompile_packages(pkg, examples)
 
     @info "Running examples in parallel"
     processes = run_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
@@ -53,25 +53,23 @@ function generate_examples(
 end
 
 """
-    precompile_packages(examples, PKG_DIR)
+    precompile_packages(pkg, examples)
 
 Go in each example and try instantiating each of the examples environments.
 This has to be executed sequentially, before rendering the examples in parallel.
 """
-function precompile_packages(examples::AbstractVector{<:String}, PKG_DIR)
+function precompile_packages(pkg, examples::AbstractVector{<:String})
     script = "
-        import Pkg;
+        using Pkg;
         Pkg.activate(ARGS[1]);
-        Pkg.develop(Pkg.PackageSpec(; path=\"$(PKG_DIR)\"));
+        Pkg.develop(Pkg.PackageSpec(; path=\"$(pkgdir(pkg))\"));
         Pkg.instantiate();
     "
     for example in examples
         cmd = `$(Base.julia_cmd()) -e $script $example`
         if !success(cmd)
             @warn string(
-                "project environment of ",
-                basename(example),
-                " could not be instantiated",
+                "project environment of ", basename(example), " could not be instantiated"
             )
             read(cmd, String)
         end
@@ -87,7 +85,7 @@ Start background processes to render the examples using the $(LITERATE) script.
 
 - `examples`: vector of path to the examples folder
 - `EXAMPLES_OUT`: path to examples output
-- `EXAMPLES_DIR` : path to the root examples folder
+- `EXAMPLES_DIR`: path to the root examples folder
 - `PKG_DIR`: path to the package to be developed
 - `WEBSITE`: path to the website url
 """

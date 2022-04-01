@@ -30,11 +30,15 @@ end
 
 using Literate: Literate
 
-const MANIFEST_OUT = joinpath(EXAMPLE, "Manifest.toml")
-mkpath(joinpath(OUT_DIR, EXAMPLE))
+const EXAMPLE_TARGET = joinpath(OUT_DIR, EXAMPLE)
+mkpath(EXAMPLE_TARGET)
 # Make a copy of the Manifest to include in the notebook
-const EXAMPLE_PATH = joinpath(EXAMPLES_DIR, EXAMPLE)
-cp(joinpath(EXAMPLE_PATH, "Manifest.toml"), joinpath(OUT_DIR, MANIFEST_OUT); force=true)
+const EXAMPLE_SRC = joinpath(EXAMPLES_DIR, EXAMPLE)
+cp(
+    joinpath(EXAMPLE_SRC, "Manifest.toml"),
+    joinpath(EXAMPLE_TARGET, "Manifest.toml");
+    force=true,
+)
 
 using Markdown: htmlesc
 
@@ -98,10 +102,10 @@ function preprocess(content)
 end
 
 # Convert to markdown and notebook
-const SCRIPTJL = joinpath(EXAMPLE_PATH, "script.jl")
+const SCRIPTJL = joinpath(EXAMPLE_SRC, "script.jl")
 Literate.markdown(
-    SCRIPTJL, joinpath(OUT_DIR, EXAMPLE); name=EXAMPLE, execute=true, preprocess=preprocess
+    SCRIPTJL, EXAMPLE_TARGET; name=EXAMPLE, execute=true, preprocess=preprocess
 )
 Literate.notebook(
-    SCRIPTJL, joinpath(OUT_DIR, EXAMPLE); name=EXAMPLE, execute=true, preprocess=preprocess
+    SCRIPTJL, EXAMPLE_TARGET; name=EXAMPLE, execute=true, preprocess=preprocess
 )
