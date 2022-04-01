@@ -13,12 +13,16 @@ Then run each example in a separate process.
 - `examples_basedir`: the relative path to the examples directory (`examples` by default)
 - `website_root`: the website root path (for correct redirecting in the examples)
 `https://juliagaussianprocesses.github.io/` by default.
+- `inclusions`: will only run the example directories listed (all by default)
+- `exclusions`: will not run any of the examples directories listed (even if present in `inclusions`)
 
 """
 function generate_examples(
     pkg::Module;
     examples_basedir="examples",
     website_root="https://juliagaussianprocesses.github.io/",
+    inclusions=[],
+    exclusions=[]
 )
     PKG_DIR = pkgdir(pkg)
     EXAMPLES_DIR = joinpath(PKG_DIR, examples_basedir)
@@ -34,7 +38,12 @@ function generate_examples(
 
     WEBSITE = joinpath(website_root, string(pkg) * ".jl")
 
-    examples = filter!(isdir, readdir(EXAMPLES_DIR; join=true))
+    examples = filter!(isdir, readdir(EXAMPLES_DIR))
+
+    isempty(inclusions) ? intersect!(examples, inclusions) : nothing
+    setdiff!(examples, exclusions)
+
+    examples = joinpath.(Ref(EXAMPLES_DIR), examples)
 
     precompile_packages(examples)
 
