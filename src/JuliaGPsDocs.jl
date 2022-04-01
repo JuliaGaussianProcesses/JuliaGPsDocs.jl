@@ -59,12 +59,12 @@ Go in each example and try instantiating each of the examples environments.
 This has to be executed sequentially, before rendering the examples in parallel.
 """
 function precompile_packages(examples::AbstractVector{<:String}, PKG_DIR)
-    script = """
+    script = "
         import Pkg;
         Pkg.activate(ARGS[1]);
-        Pkg.develop(Pkg.PackageSpec(; path="$(PKG_DIR)"));
-        Pkg.instantiate()
-    """
+        Pkg.develop(Pkg.PackageSpec(; path=\"$(PKG_DIR)\"));
+        Pkg.instantiate();
+    "
     for example in examples
         cmd = `$(Base.julia_cmd()) -e $script $example`
         if !success(cmd)
