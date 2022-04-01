@@ -5,16 +5,43 @@ using Literate
 const LITERATE = joinpath(@__DIR__, "literate.jl")
 
 """
-    generate_examples(pkg; examples_basedir, website_root)
+    generate_examples(
+        pkg;
+        examples_basedir="examples",
+        website_root="https://juliagaussianprocesses.github.io/"
+    )
 
 Initialize the environments in each folder `pkgdir(pkg)/examples_basedir` sequentially.
 Then run each example in a separate process.
 
+The examples structure should be organized as follow:
+
+examples_basedir
+├─ example-a
+|   ├─ script.jl
+|   └─ Project.toml
+└─ example-b
+   ├─ script.jl
+   └─ Project.toml
+
+The output will be given by
+
+docs
+└─ src
+    └─ examples
+        ├─ example-a
+        |   ├─ example.md
+        |   ├─ notebook.ipynb
+        |   └─ Manifest.toml
+        └─ example-b
+            ├─ example.md
+            ├─ notebook.ipynb
+            └─ Manifest.toml
+
 ## Arguments
 - `pkg`: the module where the examples are stored
-- `examples_basedir`: the relative path to the examples directory (`examples` by default)
+- `examples_basedir`: the relative path to the examples directory
 - `website_root`: the website root path (for correct redirecting in the examples)
-`https://juliagaussianprocesses.github.io/` by default.
 
 """
 function generate_examples(
@@ -60,15 +87,12 @@ This has to be executed sequentially, before rendering the examples in parallel.
 """
 function precompile_packages(pkg, examples::AbstractVector{<:String})
     script = """
-@info LOAD_PATH
 using Pkg
 Pkg.add(Pkg.PackageSpec(; path="$(pkgdir(pkg))"))
 Pkg.instantiate()
     """
-    @info LOAD_PATH
     for example in examples
         cmd = `$(Base.julia_cmd()) --project=$example -e $script`
-        read(cmd, String)
         if !success(cmd)
             @warn string(
                 "project environment of ", basename(example), " could not be instantiated"
