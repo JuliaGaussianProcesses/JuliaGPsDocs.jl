@@ -1,5 +1,7 @@
 module JuliaGPsDocs
 
+using Literate
+
 const LITERATE = joinpath(@__DIR__, "literate.jl")
 
 """
@@ -38,9 +40,9 @@ function generate_examples(
 
     precompile_packages(examples)
 
-    processes = run_examples(examples, EXAMPLES_OUT, PKG_DIR, WEBSITE)
+    processes = run_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
 
-    if !isempty(processes)
+    if isempty(processes)
         error("no process was run, check the paths used to your examples")
     elseif !success(processes)
         error("the examples $(examples[success.(processes)]) were not run successfully")
@@ -49,12 +51,12 @@ function generate_examples(
 end
 
 """
-    precompile_package(examples)
+    precompile_packages(examples)
 
 Go in each example and try instantiating each of the examples environments.
 This has to be executed sequentially, before rendering the examples in parallel.
 """
-function precompile_package(examples::AbstractVector{<:String})
+function precompile_packages(examples::AbstractVector{<:String})
     let script = "using Pkg; Pkg.activate(ARGS[1]); Pkg.instantiate()"
         for example in examples
             if !success(`$(Base.julia_cmd()) -e $script $example`)
@@ -80,11 +82,11 @@ Start background processes to render the examples using the $(LITERATE) script.
 - `PKG_DIR`: path to the package to be developed
 - `WEBSITE`: path to the website url
 """
-function run_examples(examples, EXAMPLES_OUT, PKG_DIR, WEBSITE)
+function run_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
     return map(examples) do example
         return run(
             pipeline(
-                `$(Base.julia_cmd()) $(LITERATE) $(basename(example)) $(PKG_DIR) $(EXAMPLES_OUT) $(WEBSITE)`;
+                `$(Base.julia_cmd()) --startup-file="no" --project=$(example) $(LITERATE) $(basename(example)) $(EXAMPLES_DIR) $(PKG_DIR) $(EXAMPLES_OUT) $(WEBSITE)`;
                 stdin=devnull,
                 stdout=devnull,
                 stderr=stderr,

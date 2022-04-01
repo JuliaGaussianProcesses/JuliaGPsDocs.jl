@@ -1,28 +1,28 @@
 
 # Retrieve name of example and output directory
-if length(ARGS) != 4
+if length(ARGS) != 5
     error(
         """
         please specify, in this order:
         - the basename of the example directory (e.g. `0-intro-1d`)
+        - the relative path to the examples directory (e.g. `examples`)
         - the root of the package directory (e.g. `~/AbstractGPs.jl/`)
-        - the output directory (e.g. `path/to/docs/src/`)
+        - the relative path to the output directory (e.g. `path/to/docs/src/`)
         - the base URL of the website (e.g. `https://juliagaussianprocesses.github.io/AbstractGPs.jl`)
         """
     )
 end
 const EXAMPLE = ARGS[1]
-const PKG_DIR = ARGS[2]
-const OUT_DIR = ARGS[3]
-const WEBSITE = ARGS[4]
+const EXAMPLES_DIR = ARGS[2]
+const PKG_DIR = ARGS[3]
+const OUT_DIR = ARGS[4]
+const WEBSITE = ARGS[5]
 
 # Activate environment
 # Note that each example's Project.toml must include Literate as a dependency
 using Pkg: Pkg
 
 using InteractiveUtils
-const EXAMPLE_DIR = joinpath(PKG_DIR, "examples", EXAMPLE)
-Pkg.activate(EXAMPLE_DIR)
 Pkg.instantiate()
 pkg_status = sprint() do io
     Pkg.status(; io=io)
@@ -35,7 +35,8 @@ using Literate: Literate
 const MANIFEST_OUT = joinpath(EXAMPLE, "Manifest.toml")
 mkpath(joinpath(OUT_DIR, EXAMPLE))
 # Make a copy of the Manifest to include in the notebook
-cp(joinpath(EXAMPLEPATH, "Manifest.toml"), joinpath(OUT_DIR, MANIFEST_OUT); force=true)
+const EXAMPLE_PATH = joinpath(EXAMPLES_DIR, EXAMPLE)
+cp(joinpath(EXAMPLE_PATH, "Manifest.toml"), joinpath(OUT_DIR, MANIFEST_OUT); force=true)
 
 using Markdown: htmlesc
 
@@ -99,6 +100,6 @@ function preprocess(content)
 end
 
 # Convert to markdown and notebook
-const SCRIPTJL = joinpath(EXAMPLEPATH, "script.jl")
-Literate.markdown(SCRIPTJL, OUTDIR; name=EXAMPLE, execute=true, preprocess=preprocess)
-Literate.notebook(SCRIPTJL, OUTDIR; name=EXAMPLE, execute=true, preprocess=preprocess)
+const SCRIPTJL = joinpath(EXAMPLE_PATH, "script.jl")
+Literate.markdown(SCRIPTJL, OUT_DIR; name=EXAMPLE, execute=true, preprocess=preprocess)
+Literate.notebook(SCRIPTJL, OUT_DIR; name=EXAMPLE, execute=true, preprocess=preprocess)
