@@ -81,8 +81,8 @@ function preprocess(content)
     $(literate_format(htmlesc(pkg_status)))
     # </pre>
     # To reproduce this notebook's package environment, you can
-    #nb # <a href="$(MANIFEST_OUT)">
-    #md # <a href="../$(MANIFEST_OUT)">
+    #nb # <a href="./Manifest.toml">
+    #md # <a href="./Manifest.toml">
     # download the full Manifest.toml</a>.
     # </details>
     # <details>
@@ -99,5 +99,5 @@ end
 
 # Convert to markdown and notebook
 const SCRIPTJL = joinpath(EXAMPLE_PATH, "script.jl")
-Literate.markdown(SCRIPTJL, OUT_DIR; name=EXAMPLE, execute=true, preprocess=preprocess)
-Literate.notebook(SCRIPTJL, OUT_DIR; name=EXAMPLE, execute=true, preprocess=preprocess)
+Literate.markdown(SCRIPTJL, joinpath(OUT_DIR, EXAMPLE); name=EXAMPLE, execute=true, preprocess=preprocess)
+Literate.notebook(SCRIPTJL, joinpath(OUT_DIR, EXAMPLE); name=EXAMPLE, execute=true, preprocess=preprocess)
