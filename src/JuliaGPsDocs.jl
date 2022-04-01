@@ -62,14 +62,14 @@ function precompile_packages(examples::AbstractVector{<:String}, PKG_DIR)
     script = "
         import Pkg;
         Pkg.activate(ARGS[1]);
-        # Pkg.develop(Pkg.PackageSpec(; path=\"$(PKG_DIR)\"));
+        Pkg.develop(Pkg.PackageSpec(; path=\"$(PKG_DIR)\"));
         Pkg.instantiate();
     "
     for example in examples
-        cmd = `julia -e $script $example`
+        cmd = `$(Base.julia_cmd()) -e $script $example`
         if !success(cmd)
             @warn string(
-                "project environment of example ",
+                "project environment of ",
                 basename(example),
                 " could not be instantiated",
             )
