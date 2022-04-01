@@ -106,7 +106,7 @@ end
 # Convert to markdown and notebook
 const SCRIPTJL = joinpath(EXAMPLE_SRC, "script.jl")
 Literate.markdown(
-    SCRIPTJL, EXAMPLE_TARGET; name="example", execute=true, preprocess=preprocess
+    SCRIPTJL, EXAMPLE_TARGET; name="index", execute=true, preprocess=preprocess
 )
 Literate.notebook(
     SCRIPTJL, EXAMPLE_TARGET; name="notebook", execute=true, preprocess=preprocess
