@@ -8,8 +8,9 @@ using Test
     EXAMPLES_PATH = joinpath(PKG_DIR, "docs", "src", "examples")
     for example in ["example-a", "example-b"]
         @test isdir(joinpath(EXAMPLES_PATH, example))
-        @test isfile(joinpath(EXAMPLES_PATH, example, example * ".ipynb"))
-        @test isfile(joinpath(EXAMPLES_PATH, example, example * ".md"))
+        @test isfile(joinpath(EXAMPLES_PATH, example, "notebook.ipynb"))
+        @test isfile(joinpath(EXAMPLES_PATH, example, "example.md"))
+        @test isfile(joinpath(EXAMPLES_PATH, example, "Manifest.toml"))
     end
     # rm(joinpath(PKG_DIR, "docs"); recursive=true)
 end
