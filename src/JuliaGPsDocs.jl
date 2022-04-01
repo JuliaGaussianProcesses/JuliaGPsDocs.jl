@@ -62,7 +62,7 @@ function precompile_packages(examples::AbstractVector{<:String}, PKG_DIR)
     script = "
         import Pkg;
         Pkg.activate(ARGS[1]);
-        Pkg.develop(Pkg.PackageSpec(; path=\"$(PKG_DIR)\"));
+        # Pkg.develop(Pkg.PackageSpec(; path=\"$(PKG_DIR)\"));
         Pkg.instantiate();
     "
     for example in examples
