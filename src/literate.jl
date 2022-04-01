@@ -5,9 +5,9 @@ if length(ARGS) != 5
         """
         please specify, in this order:
         - the basename of the example directory (e.g. `0-intro-1d`)
-        - the relative path to the examples directory (e.g. `examples`)
+        - the full path to the examples directory (e.g. `examples`)
         - the root of the package directory (e.g. `~/AbstractGPs.jl/`)
-        - the relative path to the output directory (e.g. `path/to/docs/src/`)
+        - the full path to the output directory (e.g. `path/to/docs/src/`)
         - the base URL of the website (e.g. `https://juliagaussianprocesses.github.io/AbstractGPs.jl`)
         """
     )
@@ -27,8 +27,6 @@ Pkg.instantiate()
 pkg_status = sprint() do io
     Pkg.status(; io=io)
 end
-# Add the dev version of the package
-Pkg.develop(Pkg.PackageSpec(; path=PKG_DIR))
 
 using Literate: Literate
 
