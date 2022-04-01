@@ -92,10 +92,13 @@ Start background processes to render the examples using the $(LITERATE) script.
 - `WEBSITE`: path to the website url
 """
 function run_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
+    cmd = addenv( # From https://github.com/devmotion/CalibrationErrors.jl/
+        Base.julia_cmd(), "JULIA_LOAD_PATH" => (Sys.iswindows() ? ";" : ":") * @__DIR__
+    )
     return map(examples) do example
         return run(
             pipeline(
-                `$(Base.julia_cmd()) --startup-file="no" --project=$(example) $(LITERATE) $(basename(example)) $(EXAMPLES_DIR) $(PKG_DIR) $(EXAMPLES_OUT) $(WEBSITE)`;
+                `$(cmd) --startup-file="no" --project=$(example) $(LITERATE) $(basename(example)) $(EXAMPLES_DIR) $(PKG_DIR) $(EXAMPLES_OUT) $(WEBSITE)`;
                 stdin=devnull,
                 stdout=devnull,
                 stderr=stderr,
