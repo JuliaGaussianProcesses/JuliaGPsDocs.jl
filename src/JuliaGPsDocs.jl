@@ -38,8 +38,10 @@ function generate_examples(
 
     examples = filter!(isdir, readdir(EXAMPLES_DIR; join=true))
 
+    @info "Instantiating examples environments"
     precompile_packages(examples)
 
+    @info "Running examples in parallel"
     processes = run_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
 
     if isempty(processes)
@@ -63,8 +65,9 @@ function precompile_packages(examples::AbstractVector{<:String})
                 error(
                     "project environment of example ",
                     basename(example),
-                    " could not be instantiated",
-                )
+                    " could not be instantiated\n",
+                    "The command used was `$(Base.julia_cmd()) -e $(script) $(example)`.",
+                    )
             end
         end
     end
