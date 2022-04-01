@@ -6,9 +6,11 @@ const LITERATE = joinpath(@__DIR__, "literate.jl")
 
 """
     generate_examples(
-        pkg;
-        examples_basedir="examples",
-        website_root="https://juliagaussianprocesses.github.io/"
+        pkg::Module;
+        examples_basedir::String="examples",
+        website_root::String="https://juliagaussianprocesses.github.io/",
+        inclusions::Union{Symbol,AbstractVector{<:String}}=:all,
+        exclusions::AbstractVector{<:String}=[],
     )
 
 Initialize the environments in each folder `pkgdir(pkg)/examples_basedir` sequentially.
@@ -42,12 +44,18 @@ docs
 - `pkg`: the module where the examples are stored
 - `examples_basedir`: the relative path to the examples directory
 - `website_root`: the website root path (for correct redirecting in the examples)
+- `inclusions`: will only run the example directories listed
+- `exclusions`: will not run any of the examples directories listed (even if present in `inclusions`)
+
+The final set of examples run is given by `setdiff(intersect(example, inclusions), exclusions)`.
 
 """
 function generate_examples(
     pkg::Module;
     examples_basedir="examples",
     website_root="https://juliagaussianprocesses.github.io/",
+    inclusions=:all,
+    exclusions=String[]
 )
     PKG_DIR = pkgdir(pkg)
     EXAMPLES_DIR = joinpath(PKG_DIR, examples_basedir)
@@ -63,7 +71,14 @@ function generate_examples(
 
     WEBSITE = joinpath(website_root, string(pkg) * ".jl")
 
-    examples = filter!(isdir, readdir(EXAMPLES_DIR; join=true))
+    examples = basename.(filter!(isdir, readdir(EXAMPLES_DIR; join=true)))
+
+    if inclusions != :all
+        intersect!(examples, inclusions)
+    end
+    setdiff!(examples, exclusions)
+
+    @show examples = joinpath.(Ref(EXAMPLES_DIR), examples)
 
     @info "Instantiating examples environments"
     precompile_packages(pkg, examples)
