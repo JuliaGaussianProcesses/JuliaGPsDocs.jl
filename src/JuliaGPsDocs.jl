@@ -65,6 +65,7 @@ using Pkg
 Pkg.add(Pkg.PackageSpec(; path="$(pkgdir(pkg))"))
 Pkg.instantiate()
     """
+    @info LOAD_PATH
     for example in examples
         cmd = `$(Base.julia_cmd()) --project=$example -e $script`
         read(cmd, String)
