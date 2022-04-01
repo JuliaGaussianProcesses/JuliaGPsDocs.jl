@@ -66,7 +66,7 @@ function precompile_packages(examples::AbstractVector{<:String}, PKG_DIR)
         Pkg.instantiate();
     "
     for example in examples
-        cmd = `$(Base.julia_cmd()) -e $script $example`
+        cmd = `julia -e $script $example`
         if !success(cmd)
             @warn string(
                 "project environment of example ",
