@@ -73,7 +73,7 @@ function preprocess(content)
     # remove VSCode `##` block delimiter lines
     content = replace(content, r"^##$."ms => "")
 
-    """ The regex adds "# " at the beginning of each line; chomp removes trailing newlines """
+    # The regex adds "# " at the beginning of each line; chomp removes trailing newlines
     literate_format(s) = chomp(replace(s, r"^"m => "# "))
 
     # <details></details> seems to be buggy in the notebook, so is avoided for now
