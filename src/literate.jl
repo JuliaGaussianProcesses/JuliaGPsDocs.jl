@@ -87,8 +87,7 @@ function preprocess(content)
     $(literate_format(htmlesc(pkg_status)))
     # </pre>
     # To reproduce this notebook's package environment, you can
-    #nb # <a href="./Manifest.toml">
-    #md # <a href="./Manifest.toml">
+    # <a href="./Manifest.toml">
     # download the full Manifest.toml</a>.
     # </details>
     # <details>
