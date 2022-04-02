@@ -54,3 +54,10 @@ julia> # add any other example-specific dependencies
 to generate the project files.
 
 Make sure to commit the `Project.toml` (but not the `Manifest.toml` file) when you want to contribute your example in a pull request.
+
+Note that each example `script.jl` should have a level 1 heading with the example title in its first line, e.g.
+```julia
+# # Demonstration of Foo
+
+...
+```
