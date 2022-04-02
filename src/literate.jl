@@ -45,7 +45,9 @@ cp(
 using Markdown: htmlesc
 
 function preprocess(content)
-    # Add link to nbviewer below the first heading of level 1
+    # ### Script preprocessing
+    #
+    # 1.) Add link to nbviewer below the first heading of level 1
     sub = SubstitutionString(
         """
 #md # ```@meta
@@ -70,10 +72,20 @@ function preprocess(content)
     )
     content = replace(content, r"^# # [^\n]*"m => sub; count=1)
 
-    # remove VSCode `##` block delimiter lines
+    # 2.) remove VSCode `##` block delimiter lines
     content = replace(content, r"^##$."ms => "")
 
-    """ The regex adds "# " at the beginning of each line; chomp removes trailing newlines """
+    # 3.) remove JuliaFormatter commands
+    content = replace(content, r"^#! format: off$."ms => "")
+    content = replace(content, r"^#! format: on$."ms => "")
+
+    # 4.) When run through Literate, the actual @__DIR__ macro points to the OUTDIR
+    # Instead, replace it with the directory in which the script itself is located:
+    content = replace(content, r"@__DIR__" => "\"$(escape_string(EXAMPLEPATH))\"")
+
+    # ### Footer
+    #
+    # The regex adds "# " at the beginning of each line; chomp removes trailing newlines
     literate_format(s) = chomp(replace(s, r"^"m => "# "))
 
     # <details></details> seems to be buggy in the notebook, so is avoided for now
