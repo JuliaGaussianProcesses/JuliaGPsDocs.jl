@@ -79,7 +79,7 @@ function preprocess(content)
     content = replace(content, r"^#! format: off$."ms => "")
     content = replace(content, r"^#! format: on$."ms => "")
 
-    # 4.) When run through Literate, the actual @__DIR__ macro points to the OUTDIR
+    # 4.) When run through Literate, the actual @__DIR__ macro points to the OUT_DIR
     # Instead, replace it with the directory in which the script itself is located:
     content = replace(content, r"@__DIR__" => "\"$(escape_string(EXAMPLE_SRC))\"")
 
