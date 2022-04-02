@@ -78,7 +78,7 @@ function generate_examples(
     end
     setdiff!(examples, exclusions)
 
-    @show examples = joinpath.(Ref(EXAMPLES_DIR), examples)
+    examples = joinpath.(Ref(EXAMPLES_DIR), examples)
 
     @info "Instantiating examples environments"
     precompile_packages(pkg, examples)
