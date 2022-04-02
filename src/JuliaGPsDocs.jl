@@ -130,7 +130,7 @@ Start background processes to render the examples using the $(LITERATE) script.
 - `PKG_DIR`: path to the package to be developed
 - `WEBSITE`: path to the website url
 """
-function run_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
+function run_examples(examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE)
     cmd = addenv( # From https://github.com/devmotion/CalibrationErrors.jl/
         Base.julia_cmd(), "JULIA_LOAD_PATH" => (Sys.iswindows() ? ";" : ":") * @__DIR__
     )
