@@ -35,8 +35,8 @@ which also executes the code and generates embedded plots etc. in the same way a
 
 ## Add a new example
 
-Create a new subdirectory in `<package-root>/examples`, and in that
-subdirectory put your code in a file called `script.jl` so that it will get
+Create a new subdirectory `<package-root>/examples/<new-example>`, and
+put your code in the file `<package-root>/examples/<new-example>/script.jl` so that it will get
 picked up by the automatic docs build.
 
 Every example uses a separate project environment. Therefore you should also create a new
