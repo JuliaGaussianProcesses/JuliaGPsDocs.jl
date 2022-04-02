@@ -10,7 +10,7 @@ using Test
     for example in ["example-a", "example-b"]
         @test isdir(joinpath(EXAMPLES_PATH, example))
         @test isfile(joinpath(EXAMPLES_PATH, example, "notebook.ipynb"))
-        @test isfile(joinpath(EXAMPLES_PATH, example, "example.md"))
+        @test isfile(joinpath(EXAMPLES_PATH, example, "index.md"))
         @test isfile(joinpath(EXAMPLES_PATH, example, "Manifest.toml"))
     end
 
