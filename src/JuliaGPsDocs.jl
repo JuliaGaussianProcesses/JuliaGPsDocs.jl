@@ -112,7 +112,8 @@ Pkg.instantiate()
             @warn string(
                 "project environment of ", basename(example), " could not be instantiated"
             )
-            read(cmd, String)
+            # By default, running `cmd` will not print anything.
+            read(cmd, String)  # this will show what happened, and here give us more detail on the error
         end
     end
 end
