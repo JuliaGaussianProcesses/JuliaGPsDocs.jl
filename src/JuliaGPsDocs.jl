@@ -84,7 +84,7 @@ function generate_examples(
     precompile_packages(pkg, examples)
 
     @info "Running examples in parallel"
-    processes = run_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
+    processes = run_examples(examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE)
 
     if isempty(processes)
         error("no process was run, check the paths used to your examples")
@@ -126,7 +126,7 @@ Start background processes to render the examples using the $(LITERATE) script.
 
 - `examples`: vector of path to the examples folder
 - `EXAMPLES_OUT`: path to examples output
-- `EXAMPLES_DIR`: path to the root examples folder
+- `examples_basedir`: relative path to the root examples folder
 - `PKG_DIR`: path to the package to be developed
 - `WEBSITE`: path to the website url
 """
@@ -137,7 +137,7 @@ function run_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
     return map(examples) do example
         return run(
             pipeline(
-                `$(cmd) --startup-file="no" --project=$(example) $(LITERATE) $(basename(example)) $(EXAMPLES_DIR) $(PKG_DIR) $(EXAMPLES_OUT) $(WEBSITE)`;
+                `$(cmd) --startup-file="no" --project=$(example) $(LITERATE) $(basename(example)) $(examples_basedir) $(PKG_DIR) $(EXAMPLES_OUT) $(WEBSITE)`;
                 stdin=devnull,
                 stdout=devnull,
                 stderr=stderr,
