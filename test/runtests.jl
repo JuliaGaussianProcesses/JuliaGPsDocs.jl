@@ -16,7 +16,7 @@ using Test
         end
 
         # Test discovery helper
-        @test find_notebook_examples(JuliaGPsDocs) ==
+        @test find_generated_examples(JuliaGPsDocs) ==
             ["examples/example-a/index.md", "examples/example-b/index.md"]
     end
 

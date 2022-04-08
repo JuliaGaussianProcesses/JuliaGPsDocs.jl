@@ -150,12 +150,12 @@ end
 _examples_output_dir(PKG_DIR) = joinpath(PKG_DIR, "docs", "src", "examples")
 
 """
-    find_notebook_examples(pkg)
+    find_generated_examples(pkg)
 
 Find all generated notebooks for package `pkg` and return it as a list, to be
 used as part of the `pages` argument to `Documenter.makedocs()`.
 """
-function find_notebook_examples(pkg)
+function find_generated_examples(pkg)
     EXAMPLES_OUT = _examples_output_dir(pkgdir(pkg))
     return map(
         basename.(
