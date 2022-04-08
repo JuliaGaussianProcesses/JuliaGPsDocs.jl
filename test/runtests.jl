@@ -1,4 +1,4 @@
-using JuliaGPsDocs: JuliaGPsDocs, generate_examples, find_generated_examples
+using JuliaGPsDocs: JuliaGPsDocs, generate_examples, find_generated_examples, rolling_examples
 using Test
 
 @testset "JuliaGPsDocs.jl" begin
