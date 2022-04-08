@@ -1,4 +1,4 @@
-using JuliaGPsDocs: JuliaGPsDocs, generate_examples
+using JuliaGPsDocs: JuliaGPsDocs, generate_examples, find_notebook_examples
 using Test
 
 @testset "JuliaGPsDocs.jl" begin
@@ -14,6 +14,10 @@ using Test
             @test isfile(joinpath(EXAMPLES_OUT, example, "index.md"))
             @test isfile(joinpath(EXAMPLES_OUT, example, "Manifest.toml"))
         end
+
+        # Test discovery helper
+        @test find_notebook_examples(JuliaGPsDocs) ==
+            ["examples/example-a/index.md", "examples/example-b/index.md"]
     end
 
     @testset "exclusions" begin
