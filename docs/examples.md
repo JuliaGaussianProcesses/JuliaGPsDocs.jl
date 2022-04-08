@@ -1,21 +1,21 @@
 # Example notebooks
 
-In JuliaGaussianProcesses, each notebook example is stored in its own subdirectory `<package-root>/examples/<example-dir>`.
+In JuliaGaussianProcesses, each notebook example is stored in its own subdirectory `<PACKAGE-ROOT>/examples/<EXAMPLE-SUBDIR>`.
 The notebook itself is stored in [Literate.jl](https://github.com/fredrikekre/Literate.jl) format in a file called `script.jl`.
 
-To run them locally, navigate to the directory with the example that you want to run and
-start the Julia REPL and activate the project environment of the example:
+To run an example script locally, you can start the Julia REPL from the package root directory,
+and activate the environment of the example with the correct path:
 ```julia
-julia> ] activate .
+julia> ] activate examples/my-example
 ```
-Alternatively, you can start Julia with `julia --project=.`. Then install all required
+Alternatively, you can start Julia with `julia --project=examples/my-example`. Then install all required
 packages with
 ```julia
 julia> ] instantiate
 ```
 Afterwards simply run
 ```julia
-julia> include("script.jl")
+julia> include("examples/my-example/script.jl")
 ```
 In particular when editing an example, it can be convenient to (re-)run only some parts of
 an example.
@@ -24,8 +24,8 @@ Many editors with Julia support such as VSCode, Juno, and Emacs support the eval
 You can convert a notebook to markdown and Jupyter notebook formats, respectively, by executing
 ```julia
 julia> using Literate
-julia> Literate.markdown("script.jl", "output_directory")
-julia> Literate.notebook("script.jl", "output_directory")
+julia> Literate.markdown("examples/my-example/script.jl", "output_directory")
+julia> Literate.notebook("examples/my-example/script.jl", "output_directory")
 ```
 (see the [Literate.jl docs](https://fredrikekre.github.io/Literate.jl/v2/) for additional options) or run
 ```shell
@@ -41,14 +41,14 @@ picked up by the automatic docs build.
 
 Every example uses a separate project environment. Therefore you should also create a new
 project environment in the directory of the example that contains all packages required by your script.
-Note that the dependencies of your example *must* include the `Literate` package.
+Note that the dependencies of your example *must* include the `Literate` package (see https://github.com/JuliaGaussianProcesses/JuliaGPsDocs.jl/issues/2).
 
-From a Julia REPL started in your example script's directory, you can run
+From a Julia REPL started in your package directory, you can run
 ```julia
-julia> ] activate .
+julia> ] activate examples/new-example
 julia> ] add Literate
 julia> # the following line adds an AbstractGPs dependency that is based on the local directories, not a hash:
-julia> ] dev ../..
+julia> ] dev .
 julia> # add any other example-specific dependencies
 ```
 to generate the project files.
