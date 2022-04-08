@@ -16,6 +16,7 @@ const LITERATE = joinpath(@__DIR__, "literate.jl")
 
 Initialize the environments in each folder `pkgdir(pkg)/examples_basedir` sequentially.
 Then run each example in a separate process.
+Write output to `pkgdir(pkg)/docs/src/examples/` (deleting any pre-existing directory there).
 
 The examples structure should be organized as follow:
 
@@ -62,8 +63,7 @@ function generate_examples(
     EXAMPLES_DIR = joinpath(PKG_DIR, examples_basedir)
     isdir(EXAMPLES_DIR) || error("example folder $EXAMPLES_DIR not found")
 
-    DOCS_DIR = joinpath(PKG_DIR, "docs")
-    EXAMPLES_OUT = joinpath(DOCS_DIR, "src", "examples")
+    EXAMPLES_OUT = _examples_output_dir(PKG_DIR)
     ispath(EXAMPLES_OUT) && begin
         @info "Deleting previous notebook and examples"
         rm(EXAMPLES_OUT; recursive=true)
@@ -183,7 +183,6 @@ function run_examples(examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE
     end
 end
 
-
 """
     roll_examples(examples, EXAMPLES_OUT, PKG_DIR, WEBSITE)
 
@@ -228,5 +227,32 @@ function roll_examples(examples, EXAMPLES_OUT, EXAMPLES_DIR, PKG_DIR, WEBSITE)
     # end
 end
 
-LITERATE
+_examples_output_dir(PKG_DIR) = joinpath(PKG_DIR, "docs", "src", "examples")
+
+"""
+    find_generated_examples(pkg)
+
+Find all generated notebooks for package `pkg` and return it as a list, to be
+used as part of the `pages` argument to `Documenter.makedocs()`.
+"""
+function find_generated_examples(pkg)
+    EXAMPLES_OUT = _examples_output_dir(pkgdir(pkg))
+    return map(
+        basename.(
+            filter!(isdir, readdir(EXAMPLES_OUT; join=true)),
+        ),
+    ) do x
+        joinpath("examples", x, "index.md")
+    end
+end
+
+"""
+Common `doctestfilters` for JuliaGaussianProcesses docs.
+"""
+const DOCTEST_FILTERS = [
+    r"{([a-zA-Z0-9]+,\s?)+[a-zA-Z0-9]+}",
+    r"(Array{[a-zA-Z0-9]+,\s?1}|Vector{[a-zA-Z0-9]+})",
+    r"(Array{[a-zA-Z0-9]+,\s?2}|Matrix{[a-zA-Z0-9]+})",
+]
+
 end
