@@ -15,6 +15,7 @@ const LITERATE = joinpath(@__DIR__, "literate.jl")
 
 Initialize the environments in each folder `pkgdir(pkg)/examples_basedir` sequentially.
 Then run each example in a separate process.
+Write output to `pkgdir(pkg)/docs/src/examples/` (deleting any pre-existing directory there).
 
 The examples structure should be organized as follow:
 
