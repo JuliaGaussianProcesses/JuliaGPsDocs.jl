@@ -61,8 +61,7 @@ function generate_examples(
     EXAMPLES_DIR = joinpath(PKG_DIR, examples_basedir)
     isdir(EXAMPLES_DIR) || error("example folder $EXAMPLES_DIR not found")
 
-    DOCS_DIR = joinpath(PKG_DIR, "docs")
-    EXAMPLES_OUT = joinpath(DOCS_DIR, "src", "examples")
+    EXAMPLES_OUT = _examples_output_dir(PKG_DIR)
     ispath(EXAMPLES_OUT) && begin
         @info "Deleting previous notebook and examples"
         rm(EXAMPLES_OUT; recursive=true)
@@ -147,5 +146,33 @@ function run_examples(examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE
         )::Base.Process
     end
 end
+
+_examples_output_dir(PKG_DIR) = joinpath(PKG_DIR, "docs", "src", "examples")
+
+"""
+    find_notebook_examples(pkg)
+
+Find all generated notebooks for package `pkg` and return it as a list, to be
+used as part of the `pages` argument to `Documenter.makedocs()`.
+"""
+function find_notebook_examples(pkg)
+    EXAMPLES_OUT = _examples_output_dir(pkgdir(pkg))
+    return map(
+        basename.(
+            filter!(isdir, readdir(EXAMPLES_OUT; join=true)),
+        ),
+    ) do x
+        joinpath("examples", x, "index.md")
+    end
+end
+
+"""
+Common `doctestfilters` for JuliaGaussianProcesses docs.
+"""
+const DOCTEST_FILTERS = [
+    r"{([a-zA-Z0-9]+,\s?)+[a-zA-Z0-9]+}",
+    r"(Array{[a-zA-Z0-9]+,\s?1}|Vector{[a-zA-Z0-9]+})",
+    r"(Array{[a-zA-Z0-9]+,\s?2}|Matrix{[a-zA-Z0-9]+})",
+]
 
 end
