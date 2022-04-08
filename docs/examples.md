@@ -27,11 +27,17 @@ julia> using Literate
 julia> Literate.markdown("examples/my-example/script.jl", "output_directory")
 julia> Literate.notebook("examples/my-example/script.jl", "output_directory")
 ```
-(see the [Literate.jl docs](https://fredrikekre.github.io/Literate.jl/v2/) for additional options) or run
-```shell
-julia docs/literate.jl myexample output_directory
+(see the [Literate.jl docs](https://fredrikekre.github.io/Literate.jl/v2/) for additional options).
+
+To execute the code and generate embedded plots etc. in the same way as in the official building of the JuliaGaussianProcesses documentation, you can run the following (assuming you are in the package root directory):
+```julia
+julia> ] activate --temp
+julia> using Pkg
+julia> Pkg.add(Pkg.PackageSpec(; url="https://github.com/JuliaGaussianProcesses/JuliaGPsDocs.jl")) # While the package is unregistered, it's a workaround
+julia> using JuliaGPsDocs
+julia> JuliaGPsDocs.run_examples(["examples/my-example"], "my-output-dir", "examples", ".", "")
 ```
-which also executes the code and generates embedded plots etc. in the same way as in building the AbstractGPs documentation.
+You should end up with a `Manifest.toml`, `index.md`, and `notebook.ipynb` in the `my-output-dir/my-example` directory.
 
 ## Add a new example
 
