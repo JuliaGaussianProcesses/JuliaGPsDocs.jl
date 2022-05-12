@@ -11,6 +11,7 @@ const LITERATE = joinpath(@__DIR__, "literate.jl")
         website_root::String="https://juliagaussianprocesses.github.io/",
         inclusions::Union{Symbol,AbstractVector{<:String}}=:all,
         exclusions::AbstractVector{<:String}=[],
+        parallel::Bool=true,
     )
 
 Initialize the environments in each folder `pkgdir(pkg)/examples_basedir` sequentially.
@@ -47,6 +48,7 @@ docs
 - `website_root`: the website root path (for correct redirecting in the examples)
 - `inclusions`: will only run the example directories listed
 - `exclusions`: will not run any of the examples directories listed (even if present in `inclusions`)
+- `parallel` : all examples are run in parallel in multiple processes
 
 The final set of examples run is given by `setdiff(intersect(example, inclusions), exclusions)`.
 
@@ -56,7 +58,8 @@ function generate_examples(
     examples_basedir="examples",
     website_root="https://juliagaussianprocesses.github.io/",
     inclusions=:all,
-    exclusions=String[]
+    exclusions=String[],
+    parallel=true,
 )
     PKG_DIR = pkgdir(pkg)
     EXAMPLES_DIR = joinpath(PKG_DIR, examples_basedir)
@@ -83,8 +86,8 @@ function generate_examples(
     @info "Instantiating examples environments"
     precompile_packages(pkg, examples)
 
-    @info "Running examples in parallel"
-    processes = run_examples(examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE)
+    @info """Running examples in $(parallel ? "parallel" : "series")"""
+    processes = run_examples(examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE, parallel)
 
     if isempty(processes)
         error("no process was run, check the paths used to your examples")
@@ -130,8 +133,9 @@ Start background processes to render the examples using the $(LITERATE) script.
 - `examples_basedir`: relative path to the root examples folder
 - `PKG_DIR`: path to the package to be developed
 - `WEBSITE`: path to the website url
+- `parallel`: run examples in parallel
 """
-function run_examples(examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE)
+function run_examples(examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE, parallel)
     cmd = addenv( # From https://github.com/devmotion/CalibrationErrors.jl/
         Base.julia_cmd(), "JULIA_LOAD_PATH" => (Sys.iswindows() ? ";" : ":") * @__DIR__
     )
@@ -143,7 +147,7 @@ function run_examples(examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE
                 stdout=devnull,
                 stderr=stderr,
             );
-            wait=false,
+            wait=!parallel,
         )::Base.Process
     end
 end
