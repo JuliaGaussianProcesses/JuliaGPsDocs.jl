@@ -88,7 +88,7 @@ function generate_examples(
 
     @info """Running examples with $(ntasks == 0 ? length(examples) : ntasks) $(ntasks == 1 ? "task" : "parallel tasks")"""
     processes = run_examples(
-        examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE, channeled_tasks
+        examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE, ntasks
     )
 
     if isempty(processes)
