@@ -86,7 +86,7 @@ function generate_examples(
     @info "Instantiating examples environments"
     precompile_packages(pkg, examples)
 
-    @info """Running examples in $(parallel ? "parallel" : "series")"""
+    @info """Running examples with $(ntasks == 0 ? length(examples) : ntasks) $(ntasks == 1 ? "task" : "parallel tasks")"""
     processes = run_examples(
         examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE, channeled_tasks
     )
@@ -135,7 +135,7 @@ Start background processes to render the examples using the $(LITERATE) script.
 - `examples_basedir`: relative path to the root examples folder
 - `PKG_DIR`: path to the package to be developed
 - `WEBSITE`: path to the website url
-- `parallel`: run examples in parallel
+- `ntasks`: maximum number of tasks for running in parallel
 """
 function run_examples(examples, EXAMPLES_OUT, examples_basedir, PKG_DIR, WEBSITE, ntasks)
     cmd = addenv( # From https://github.com/devmotion/CalibrationErrors.jl/
