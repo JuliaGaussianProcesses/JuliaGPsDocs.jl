@@ -165,7 +165,7 @@ used as part of the `pages` argument to `Documenter.makedocs()`.
 """
 function find_generated_examples(pkg)
     EXAMPLES_OUT = _examples_output_dir(pkgdir(pkg))
-    return map(basename.(filter!(isdir, readdir(EXAMPLES_OUT; join=true)),)) do x
+    return map(basename.(filter!(isdir, readdir(EXAMPLES_OUT; join=true)))) do x
         joinpath("examples", x, "index.md")
     end
 end
