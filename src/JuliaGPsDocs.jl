@@ -113,12 +113,15 @@ Pkg.instantiate()
     """
     for example in examples
         cmd = `$(Base.julia_cmd()) --project=$example -e $script`
-        if !success(cmd)
+        t = @timed pass = success(cmd)
+        if !pass
             @warn string(
                 "project environment of ", basename(example), " could not be instantiated"
             )
             # By default, running `cmd` will not print anything.
             read(cmd, String)  # this will show what happened, and here give us more detail on the error
+        else
+            @info "Ran example $example in $(t.time) s"
         end
     end
 end
